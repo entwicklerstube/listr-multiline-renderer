@@ -16,32 +16,10 @@ test('Single-line output', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ⠙ Task 1',
 		'   → Hello'
-	]);
-});
-
-test('Multi-line output', t => {
-	const tasks = [
-		{
-			title: 'Task 1',
-			subtasks: [],
-			output: 'Hello\nWorld',
-			isEnabled: () => true,
-			isCompleted: () => false,
-			isPending: () => true,
-			isSkipped: () => false,
-			hasFailed: () => false
-		}
-	];
-	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
-		' ⠙ Task 1',
-		'   → Hello',
-		'     World'
 	]);
 });
 
@@ -69,8 +47,8 @@ test('Nested with output', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ❯ Task 1',
 		'   ⠙ Task 1A',
 		'     → Hello'

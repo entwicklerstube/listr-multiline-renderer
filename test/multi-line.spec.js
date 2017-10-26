@@ -2,23 +2,15 @@ const test = require('ava').test;
 const stripAnsi = require('strip-ansi');
 const render = require('../lib/render');
 
-test('First in progress', t => {
+test('Default multi-line output', t => {
 	const tasks = [
 		{
 			title: 'Task 1',
 			subtasks: [],
+			output: 'Hello\nWorld',
 			isEnabled: () => true,
 			isCompleted: () => false,
 			isPending: () => true,
-			isSkipped: () => false,
-			hasFailed: () => false
-		},
-		{
-			title: 'Task 2',
-			subtasks: [],
-			isEnabled: () => true,
-			isCompleted: () => false,
-			isPending: () => false,
 			isSkipped: () => false,
 			hasFailed: () => false
 		}
@@ -27,24 +19,17 @@ test('First in progress', t => {
 	const lines = stripAnsi(output).split('\n');
 	t.deepEqual(lines, [
 		' ⠙ Task 1',
-		'   Task 2'
+		'   → Hello',
+		'     World'
 	]);
 });
 
-test('First skipped', t => {
+test('Custom formatter for multi-line output', t => {
 	const tasks = [
 		{
 			title: 'Task 1',
 			subtasks: [],
-			isEnabled: () => true,
-			isCompleted: () => false,
-			isPending: () => false,
-			isSkipped: () => true,
-			hasFailed: () => false
-		},
-		{
-			title: 'Task 2',
-			subtasks: [],
+			output: 'Hello\nWorld',
 			isEnabled: () => true,
 			isCompleted: () => false,
 			isPending: () => true,
@@ -52,28 +37,23 @@ test('First skipped', t => {
 			hasFailed: () => false
 		}
 	];
-	const output = render(tasks, {});
+	const output = render(tasks, {
+		outputFormatter: line => ` | ${line}`
+	});
 	const lines = stripAnsi(output).split('\n');
 	t.deepEqual(lines, [
-		' ↓ Task 1 [skipped]',
-		' ⠙ Task 2'
+		' ⠙ Task 1',
+		'    | Hello',
+		'    | World'
 	]);
 });
 
-test('Second in progress', t => {
+test('Custom formatter to remove any indentation', t => {
 	const tasks = [
 		{
 			title: 'Task 1',
 			subtasks: [],
-			isEnabled: () => true,
-			isCompleted: () => true,
-			isPending: () => false,
-			isSkipped: () => false,
-			hasFailed: () => false
-		},
-		{
-			title: 'Task 2',
-			subtasks: [],
+			output: 'Hello\nWorld',
 			isEnabled: () => true,
 			isCompleted: () => false,
 			isPending: () => true,
@@ -81,28 +61,23 @@ test('Second in progress', t => {
 			hasFailed: () => false
 		}
 	];
-	const output = render(tasks, {});
+	const output = render(tasks, {
+		outputFormatter: line => line
+	});
 	const lines = stripAnsi(output).split('\n');
 	t.deepEqual(lines, [
-		' ✔ Task 1',
-		' ⠙ Task 2'
+		' ⠙ Task 1',
+		'   Hello',
+		'   World'
 	]);
 });
 
-test('Skips disabled tasks', t => {
+test('Custom formatter based on the line index', t => {
 	const tasks = [
 		{
 			title: 'Task 1',
 			subtasks: [],
-			isEnabled: () => false,
-			isCompleted: () => false,
-			isPending: () => false,
-			isSkipped: () => false,
-			hasFailed: () => false
-		},
-		{
-			title: 'Task 2',
-			subtasks: [],
+			output: 'Hello\nWorld',
 			isEnabled: () => true,
 			isCompleted: () => false,
 			isPending: () => true,
@@ -110,9 +85,48 @@ test('Skips disabled tasks', t => {
 			hasFailed: () => false
 		}
 	];
-	const output = render(tasks, {});
+	const output = render(tasks, {
+		outputFormatter: (line, index) => index ? `  ${line}` : `> ${line}`
+	});
 	const lines = stripAnsi(output).split('\n');
 	t.deepEqual(lines, [
-		' ⠙ Task 2'
+		' ⠙ Task 1',
+		'   > Hello',
+		'     World'
+	]);
+});
+
+test('Custom formatter for nested tasks', t => {
+	const tasks = [
+		{
+			title: 'Task 1',
+			subtasks: [
+				{
+					title: 'Task 1A',
+					subtasks: [],
+					output: 'Hello\nWorld',
+					isEnabled: () => true,
+					isCompleted: () => false,
+					isPending: () => true,
+					isSkipped: () => false,
+					hasFailed: () => false
+				}
+			],
+			isEnabled: () => true,
+			isCompleted: () => false,
+			isPending: () => true,
+			isSkipped: () => false,
+			hasFailed: () => false
+		}
+	];
+	const output = render(tasks, {
+		outputFormatter: line => `# ${line}`
+	});
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
+		' ❯ Task 1',
+		'   ⠙ Task 1A',
+		'     # Hello',
+		'     # World'
 	]);
 });
