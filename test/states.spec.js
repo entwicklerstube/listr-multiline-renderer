@@ -15,8 +15,8 @@ test('In progress', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ⠙ Task 1'
 	]);
 });
@@ -34,8 +34,8 @@ test('Completed successfully', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ✔ Task 1'
 	]);
 });
@@ -53,8 +53,8 @@ test('Failed', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ✖ Task 1'
 	]);
 });
@@ -72,8 +72,8 @@ test('Skipped', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ↓ Task 1 [skipped]'
 	]);
 });

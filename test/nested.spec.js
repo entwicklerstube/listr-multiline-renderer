@@ -34,8 +34,8 @@ test('Sub tasks', t => {
 		}
 	];
 	const output = render(tasks, {});
-	const expected = stripAnsi(output).split('\n');
-	t.deepEqual(expected, [
+	const lines = stripAnsi(output).split('\n');
+	t.deepEqual(lines, [
 		' ❯ Task 1',
 		'   ⠙ Task 1A',
 		'   Task 2'
